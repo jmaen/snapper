@@ -11,8 +11,6 @@ public abstract class SnapshotTest {
 
     protected static WebDriver driver;
 
-    private Snapshot snapshot;
-
     @BeforeAll
     public static void setup() {
         driver = new FirefoxDriver();

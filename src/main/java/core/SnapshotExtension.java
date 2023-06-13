@@ -2,59 +2,37 @@ package core;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
-import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.openqa.selenium.WebDriver;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class SnapshotExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
+public class SnapshotExtension implements AfterTestExecutionCallback {
 
     @Override
-    public void beforeTestExecution(ExtensionContext context) throws IllegalAccessException {
+    public void afterTestExecution(ExtensionContext context) throws IllegalAccessException, IOException {
         if(context.getTestClass().isPresent()
                 && context.getTestInstance().isPresent()
                 && context.getTestMethod().isPresent()) {
 
             Class<?> testClass = context.getTestClass().get();
-            Method testMethod = context.getTestMethod().get();
-            SnapshotName nameAnnotation = testMethod.getDeclaredAnnotation(SnapshotName.class);
-            String name;
-            if(nameAnnotation != null) {
-                name = nameAnnotation.value();
-            } else {
-                name = testClass.getName() + "_" + testMethod.getName();
-            }
-
-            Field field = FieldUtils.getField(testClass, "snapshot", true);
-            if(!Snapshot.class.isAssignableFrom(field.getType())) {
-                throw new IllegalStateException("Snapshot field has the wrong type");
-            }
-            field.set(context.getTestInstance().get(), new Snapshot(name));
-        }
-    }
-
-    @Override
-    public void afterTestExecution(ExtensionContext context) throws IllegalAccessException, IOException {
-        if(context.getTestClass().isPresent()
-                && context.getTestInstance().isPresent()) {
-
             Object testInstance = context.getTestInstance().get();
+            Method testMethod = context.getTestMethod().get();
 
-            Field snapshotField = FieldUtils.getField(context.getTestClass().get(), "snapshot", true);
-            if(!Snapshot.class.isAssignableFrom(snapshotField.getType())) {
-                throw new IllegalStateException("Snapshot field has the wrong type");
+            List<Field> fields = FieldUtils.getAllFieldsList(testClass)
+                    .stream()
+                    .filter(field -> field.getType() == WebDriver.class)
+                    .collect(Collectors.toList());
+            if(fields.size() != 1) {
+                throw new IllegalStateException("Test class has to contain exactly one field of type 'WebDriver'");
             }
-            Snapshot snapshot = (Snapshot) snapshotField.get(testInstance);
+            WebDriver driver = (WebDriver) fields.get(0).get(testInstance);
 
-            Field driverField = FieldUtils.getField(context.getTestClass().get(), "driver", true);
-            if(WebDriver.class != driverField.getType()) {
-                throw new IllegalStateException("Driver field has the wrong type");
-            }
-            WebDriver driver = (WebDriver) driverField.get(testInstance);
-
+            Snapshot snapshot = Snapshot.of(testMethod);
             snapshot.shouldMatch(SnapshotUtil.takeScreenshot(driver));
         }
     }
