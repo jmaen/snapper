@@ -50,3 +50,5 @@ gradle-app.setting
 build
 
 .idea
+
+src/test
