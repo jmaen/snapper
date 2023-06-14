@@ -1,24 +1,14 @@
 package core;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.junit.jupiter.api.Test;
 
-@ExtendWith(SnapshotExtension.class)
-public abstract class SnapshotTest {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    protected static WebDriver driver;
-
-    @BeforeAll
-    public static void setup() {
-        driver = new FirefoxDriver();
-    }
-
-    @AfterAll
-    public static void teardown() {
-        driver.quit();
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Test
+public @interface SnapshotTest {
 }

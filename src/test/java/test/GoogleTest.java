@@ -1,12 +1,18 @@
 package test;
 
+import core.SnapshotExtension;
 import core.SnapshotTest;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
-public class GoogleTest extends SnapshotTest {
+@ExtendWith(SnapshotExtension.class)
+public class GoogleTest {
+
+    private static WebDriver driver;
 
     @BeforeAll
     public static void setup() {
@@ -15,9 +21,14 @@ public class GoogleTest extends SnapshotTest {
         driver = new FirefoxDriver(options);
     }
 
-    @Test
+    @SnapshotTest
     public void search() {
         driver.get("https://jmaen.github.io/");
+    }
+
+    @AfterAll
+    public static void teardown() {
+        driver.quit();
     }
 
 }

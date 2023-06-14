@@ -23,17 +23,19 @@ public class SnapshotExtension implements AfterTestExecutionCallback {
             Object testInstance = context.getTestInstance().get();
             Method testMethod = context.getTestMethod().get();
 
-            List<Field> fields = FieldUtils.getAllFieldsList(testClass)
-                    .stream()
-                    .filter(field -> field.getType() == WebDriver.class)
-                    .collect(Collectors.toList());
-            if(fields.size() != 1) {
-                throw new IllegalStateException("Test class has to contain exactly one field of type 'WebDriver'");
-            }
-            WebDriver driver = (WebDriver) fields.get(0).get(testInstance);
+            if(testMethod.isAnnotationPresent(SnapshotTest.class)) {
+                List<Field> fields = FieldUtils.getAllFieldsList(testClass)
+                        .stream()
+                        .filter(field -> field.getType() == WebDriver.class)
+                        .collect(Collectors.toList());
+                if (fields.size() != 1) {
+                    throw new SnapshotException("Test class has to contain exactly one field of type 'WebDriver'");
+                }
+                WebDriver driver = (WebDriver) FieldUtils.readField(fields.get(0), testInstance, true);
 
-            Snapshot snapshot = Snapshot.of(testMethod);
-            snapshot.shouldMatch(SnapshotUtil.takeScreenshot(driver));
+                Snapshot snapshot = Snapshot.of(testMethod);
+                snapshot.shouldMatch(SnapshotUtil.takeScreenshot(driver));
+            }
         }
     }
 
