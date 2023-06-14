@@ -49,22 +49,26 @@ public class Snapshot {
         switch(config.getUpdateMode()) {
             case ALL -> ImageIO.write(screenshot, "png", file);
             case MISSING -> {
-                if(!file.exists()) {
+                if(file.exists()) {
+                    match(ImageIO.read(file), screenshot);
+                } else {
                     ImageIO.write(screenshot, "png", file);
                 }
             }
             case NONE -> {
                 if(file.exists()) {
-                    BufferedImage snapshot = ImageIO.read(file);
-
-                    // TODO ImageComparison
-
-                    throw new AssertionError("TODO");
+                    match(ImageIO.read(file), screenshot);
                 } else {
                     throw new SnapshotException("Snapshot not found for " + name);
                 }
             }
         }
+    }
+
+    // TODO naming
+    private void match(BufferedImage snapshot, BufferedImage screenshot) {
+        // TODO image comparison
+        throw new AssertionError("TODO");
     }
 
     public enum UpdateMode {

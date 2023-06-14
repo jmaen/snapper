@@ -1,8 +1,9 @@
 package core;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.support.TypeBasedParameterResolver;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 
 import java.io.IOException;
@@ -11,7 +12,21 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SnapshotExtension implements AfterTestExecutionCallback {
+public class SnapshotExtension extends TypeBasedParameterResolver<Screenshot>
+        implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
+
+    private Screenshot screenshot;
+
+    @Override
+    public void beforeTestExecution(ExtensionContext context) {
+        screenshot = new Screenshot();
+    }
+
+    @Override
+    public Screenshot resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        return screenshot;
+    }
 
     @Override
     public void afterTestExecution(ExtensionContext context) throws IllegalAccessException, IOException {
@@ -33,8 +48,12 @@ public class SnapshotExtension implements AfterTestExecutionCallback {
                 }
                 WebDriver driver = (WebDriver) FieldUtils.readField(fields.get(0), testInstance, true);
 
+                if(!screenshot.hasTarget()) {
+                    screenshot.setTarget((TakesScreenshot) driver);
+                }
+
                 Snapshot snapshot = Snapshot.of(testMethod);
-                snapshot.shouldMatch(SnapshotUtil.takeScreenshot(driver));
+                snapshot.shouldMatch(screenshot.take());
             }
         }
     }
