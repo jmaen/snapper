@@ -39,16 +39,16 @@ public class SnapshotExtension extends TypeBasedParameterResolver<Screenshot>
             Method testMethod = context.getTestMethod().get();
 
             if(testMethod.isAnnotationPresent(SnapshotTest.class)) {
-                List<Field> fields = FieldUtils.getAllFieldsList(testClass)
-                        .stream()
-                        .filter(field -> field.getType() == WebDriver.class)
-                        .collect(Collectors.toList());
-                if (fields.size() != 1) {
-                    throw new SnapshotException("Test class has to contain exactly one field of type 'WebDriver'");
-                }
-                WebDriver driver = (WebDriver) FieldUtils.readField(fields.get(0), testInstance, true);
-
                 if(!screenshot.hasTarget()) {
+                    List<Field> fields = FieldUtils.getAllFieldsList(testClass)
+                            .stream()
+                            .filter(field -> field.getType() == WebDriver.class)
+                            .collect(Collectors.toList());
+                    if (fields.size() != 1) {
+                        throw new SnapshotException("Test class has to contain exactly one field of type 'WebDriver'");
+                    }
+                    WebDriver driver = (WebDriver) FieldUtils.readField(fields.get(0), testInstance, true);
+
                     screenshot.setTarget((TakesScreenshot) driver);
                 }
 

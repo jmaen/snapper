@@ -50,14 +50,14 @@ public class Snapshot {
             case ALL -> ImageIO.write(screenshot, "png", file);
             case MISSING -> {
                 if(file.exists()) {
-                    match(ImageIO.read(file), screenshot);
+                    compare(ImageIO.read(file), screenshot);
                 } else {
                     ImageIO.write(screenshot, "png", file);
                 }
             }
             case NONE -> {
                 if(file.exists()) {
-                    match(ImageIO.read(file), screenshot);
+                    compare(ImageIO.read(file), screenshot);
                 } else {
                     throw new SnapshotException("Snapshot not found for " + name);
                 }
@@ -65,8 +65,7 @@ public class Snapshot {
         }
     }
 
-    // TODO naming
-    private void match(BufferedImage snapshot, BufferedImage screenshot) {
+    private void compare(BufferedImage snapshot, BufferedImage screenshot) {
         // TODO image comparison
         throw new AssertionError("TODO");
     }
