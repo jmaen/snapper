@@ -12,20 +12,20 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SnapshotExtension extends TypeBasedParameterResolver<Screenshot>
+public class SnapshotExtension extends TypeBasedParameterResolver<SnapshotContext>
         implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
-    private Screenshot screenshot;
+    private SnapshotContext snapshotContext;
 
     @Override
     public void beforeTestExecution(ExtensionContext context) {
-        screenshot = new Screenshot();
+        snapshotContext = new SnapshotContext();
     }
 
     @Override
-    public Screenshot resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+    public SnapshotContext resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
             throws ParameterResolutionException {
-        return screenshot;
+        return snapshotContext;
     }
 
     @Override
@@ -39,21 +39,22 @@ public class SnapshotExtension extends TypeBasedParameterResolver<Screenshot>
             Method testMethod = context.getTestMethod().get();
 
             if(testMethod.isAnnotationPresent(SnapshotTest.class)) {
-                if(!screenshot.hasTarget()) {
+                if(!snapshotContext.hasTarget()) {
                     List<Field> fields = FieldUtils.getAllFieldsList(testClass)
                             .stream()
                             .filter(field -> field.getType() == WebDriver.class)
                             .collect(Collectors.toList());
+
                     if (fields.size() != 1) {
                         throw new SnapshotException("Test class has to contain exactly one field of type 'WebDriver'");
                     }
-                    WebDriver driver = (WebDriver) FieldUtils.readField(fields.get(0), testInstance, true);
 
-                    screenshot.setTarget((TakesScreenshot) driver);
+                    WebDriver driver = (WebDriver) FieldUtils.readField(fields.get(0), testInstance, true);
+                    snapshotContext.setTarget(driver);
                 }
 
                 Snapshot snapshot = Snapshot.of(testMethod);
-                snapshot.shouldMatch(screenshot.take());
+                snapshot.shouldMatch(snapshotContext.takeScreenshot());
             }
         }
     }
