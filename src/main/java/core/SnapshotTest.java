@@ -13,4 +13,5 @@ import java.lang.annotation.Target;
 @ExtendWith(SnapshotExtension.class)
 @Test
 public @interface SnapshotTest {
+    String name() default "";
 }

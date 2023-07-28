@@ -31,14 +31,6 @@ public class SnapshotConfig {
         updateMode = Snapshot.UpdateMode.valueOf(getValue("update-snapshots").toUpperCase());
     }
 
-    private String getValue(String key) {
-        String value = properties.getProperty(key);
-        if(value == null) {
-            throw new SnapshotException("Missing snapshot property for " + key);
-        }
-        return value;
-    }
-
     public static SnapshotConfig get() {
         if(config == null) {
             config = new SnapshotConfig();
@@ -68,6 +60,14 @@ public class SnapshotConfig {
 
     public void setUpdateMode(Snapshot.UpdateMode updateMode) {
         this.updateMode = updateMode;
+    }
+
+    private String getValue(String key) {
+        String value = properties.getProperty(key);
+        if(value == null) {
+            throw new SnapshotException("Missing snapshot property for " + key);
+        }
+        return value;
     }
 
 }

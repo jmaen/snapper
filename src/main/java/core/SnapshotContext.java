@@ -1,6 +1,8 @@
 package core;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.firefox.HasFullPageScreenshot;
 
 import javax.imageio.ImageIO;
@@ -14,25 +16,27 @@ import java.util.List;
 
 public class SnapshotContext {
 
-    private TakesScreenshot screenshotTarget;
-    private SearchContext searchTarget;
+    private TakesScreenshot target;
+    private Point targetLocation = new Point(0, 0);
 
     private boolean isFullPage;
     private List<WebElement> ignoredElements = new ArrayList<>();
     private Color ignoredColor = Color.MAGENTA;
 
     public boolean hasTarget() {
-        return screenshotTarget != null && searchTarget != null;
+        return target != null;
     }
 
     public void setTarget(WebDriver target) {
-        screenshotTarget = (TakesScreenshot) target;
-        searchTarget = target;
+        if(!(target instanceof TakesScreenshot)) {
+            throw new SnapshotException("WebDriver does not support screenshots");
+        }
+        this.target = (TakesScreenshot) target;
     }
 
     public void setTarget(WebElement target) {
-        screenshotTarget = target;
-        searchTarget = target;
+        this.target = target;
+        targetLocation = target.getLocation();
     }
 
     public void setFullPage(boolean isFullPage) {
@@ -52,22 +56,30 @@ public class SnapshotContext {
     }
 
     public BufferedImage takeScreenshot() throws IOException {
-        File file;
+        File file = null;
         if(isFullPage) {
-            if(screenshotTarget instanceof HasFullPageScreenshot) {
-                file = ((HasFullPageScreenshot) screenshotTarget).getFullPageScreenshotAs(OutputType.FILE);
+            if(target instanceof HasFullPageScreenshot) {
+                file = ((HasFullPageScreenshot) target).getFullPageScreenshotAs(OutputType.FILE);
             } else {
-                System.err.println("Screenshot target does not support full page screenshots, "
-                        + "fell back to default screenshots");
-                file = screenshotTarget.getScreenshotAs(OutputType.FILE);
+                System.err.println(
+                        "Screenshot target does not support full page screenshots, fell back to default screenshots"
+                );
             }
-        } else {
-           file = screenshotTarget.getScreenshotAs(OutputType.FILE);
+        }
+        if(file == null) {
+           file = target.getScreenshotAs(OutputType.FILE);
         }
         BufferedImage screenshot = ImageIO.read(file);
 
         if(!ignoredElements.isEmpty()) {
-            // TODO "black out" ignored elements
+            Graphics2D graphics = screenshot.createGraphics();
+            graphics.setColor(ignoredColor);
+            for(WebElement element : ignoredElements) {
+                Rectangle rect = element.getRect();
+                // TODO add padding to prevent overflowing
+                graphics.fillRect(rect.x - targetLocation.x, rect.y - targetLocation.y, rect.width, rect.height);
+            }
+            graphics.dispose();
         }
 
         return screenshot;

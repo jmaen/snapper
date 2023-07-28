@@ -3,7 +3,6 @@ package core;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.api.extension.support.TypeBasedParameterResolver;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 
 import java.io.IOException;

@@ -24,11 +24,9 @@ public class Snapshot {
     public static Snapshot of(Method testMethod) {
         Class<?> testClass = testMethod.getDeclaringClass();
 
-        SnapshotName nameAnnotation = testMethod.getDeclaredAnnotation(SnapshotName.class);
-        String name;
-        if(nameAnnotation != null) {
-           name = nameAnnotation.value();
-        } else {
+        SnapshotTest annotation = testMethod.getDeclaredAnnotation(SnapshotTest.class);
+        String name = annotation.name();
+        if(name.isEmpty()) {
             name = testClass.getSimpleName() + "_" + testMethod.getName();
         }
 
