@@ -1,4 +1,4 @@
-package core;
+package snapshot;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.extension.*;

@@ -1,4 +1,4 @@
-package core;
+package snapshot;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.Point;

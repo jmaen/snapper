@@ -1,4 +1,4 @@
-package core;
+package snapshot;
 
 public class SnapshotException extends RuntimeException {
 

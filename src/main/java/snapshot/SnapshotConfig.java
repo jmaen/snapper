@@ -1,4 +1,4 @@
-package core;
+package snapshot;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,7 @@
-package core;
+package snapshot;
+
+import image.ImageComparisonResult;
+import image.ImageComparison;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -46,6 +49,7 @@ public class Snapshot {
         File file = path.toFile();
         switch(config.getUpdateMode()) {
             case ALL -> ImageIO.write(screenshot, "png", file);
+
             case MISSING -> {
                 if(file.exists()) {
                     compare(ImageIO.read(file), screenshot);
@@ -53,19 +57,36 @@ public class Snapshot {
                     ImageIO.write(screenshot, "png", file);
                 }
             }
+
             case NONE -> {
                 if(file.exists()) {
                     compare(ImageIO.read(file), screenshot);
                 } else {
-                    throw new SnapshotException("Snapshot not found for " + name);
+                    throw new SnapshotException("Snapshot not found for '" + name + "'");
                 }
             }
         }
     }
 
-    private void compare(BufferedImage snapshot, BufferedImage screenshot) {
-        // TODO image comparison
-        throw new AssertionError("TODO");
+    private void compare(BufferedImage snapshot, BufferedImage screenshot) throws IOException {
+        ImageComparison comparison = new ImageComparison(snapshot, screenshot);
+        ImageComparisonResult result = comparison.compare();
+
+        switch(result.getState()) {
+            case SIZE_MISMATCH ->
+                    throw new SnapshotException("Screenshot size does not match snapshot size for '" + name + "'");
+
+            case MISMATCH -> {
+                Path outputPath = Path.of(config.getOutputDir(), name + ".png");
+                try {
+                    Files.createDirectories(outputPath.getParent());
+                } catch (IOException e) {
+                    throw new SnapshotException("Failed to create output folder structure", e);
+                }
+                ImageIO.write(result.getDiff(), "png", outputPath.toFile());
+                throw new AssertionError("Screenshot does not match snapshot '" + name + "'");
+            }
+        }
     }
 
     public enum UpdateMode {
