@@ -10,7 +10,7 @@ public class ImageComparison {
     private final BufferedImage expected;
     private final BufferedImage actual;
 
-    // comparison options, e.g. tolerance (max color delta)
+    private double maxDelta;
 
     private DiffMode diffMode = DiffMode.PIXEL;
     private Color diffColor = Color.RED;
@@ -22,6 +22,11 @@ public class ImageComparison {
     public ImageComparison(BufferedImage expected, BufferedImage actual) {
         this.expected = expected;
         this.actual = actual;
+    }
+
+    public ImageComparison withThreshold(double threshold) {
+        maxDelta = ColorDelta.MAX_DELTA * threshold * threshold;
+        return this;
     }
 
     public ImageComparison withDiffMode(DiffMode diffMode) {
@@ -59,8 +64,8 @@ public class ImageComparison {
         boolean[][] differences = new boolean[expected.getWidth()][expected.getHeight()];
         for(int x = 0; x < expected.getWidth(); x++) {
             for(int y = 0; y < expected.getHeight(); y++) {
-                // TODO calculate color delta
-                if(expected.getRGB(x, y) != actual.getRGB(x, y)) {
+                double delta = ColorDelta.delta(expected.getRGB(x, y), actual.getRGB(x, y));
+                if(delta > maxDelta) {
                     differences[x][y] = true;
                     differenceCount++;
                 }
