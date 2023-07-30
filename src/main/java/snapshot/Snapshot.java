@@ -69,7 +69,12 @@ public class Snapshot {
     }
 
     private void compare(BufferedImage snapshot, BufferedImage screenshot) throws IOException {
-        ImageComparison comparison = new ImageComparison(snapshot, screenshot);
+        ImageComparison comparison = new ImageComparison(snapshot, screenshot)
+                .withTolerance(config.getTolerance())
+                .withDiffMode(config.getDiffMode())
+                .withDiffColor(config.getDiffColor())
+                .withBoxThreshold(config.getBoxThreshold())
+                .withBoxStrokeWidth(config.getBoxStrokeWidth());
         ImageComparisonResult result = comparison.compare();
 
         switch(result.getState()) {
