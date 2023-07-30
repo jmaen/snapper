@@ -32,14 +32,17 @@ A more advanced test that includes the above features might look like the follow
 public void advancedTest(SnapshotContext context) {
   driver.get("https://www.google.com");
 
-  WebElement searchBar = driver.findElement(By.name("q"));
+  WebElement searchBar = driver.findElement(By.cssSelector(".RNNXgb"));
   context.setTarget(searchBar);
 
   WebElement searchIcon = driver.findElement(By.cssSelector(".QCzoEc > svg:nth-child(1)"));
   context.addIgnoredElement(searchIcon);
 }
 ```
-In the above example, Snapper will only take a screenshot of the search bar and ignore the search icon.
+In the above example, Snapper will only take a screenshot of the search bar and ignore the search icon in the left:
+
+![](https://github.com/jmaen/snapper/assets/47495425/d074676e-209e-4238-b3a8-a9a7a0137b21)
+
 
 ## Configuration
 The aforementioned defaults can be changed through the `snapper.properties` file or by accessing the `SnapshotConfig` directly from your tests.
