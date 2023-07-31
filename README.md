@@ -53,9 +53,26 @@ By default, these diff images are located in the `build/reports/snapper` directo
 
 There are two different diff modes:
 
-| ![expected](https://github.com/jmaen/snapper/assets/47495425/f3e02c00-eec4-47a2-9766-6401e94c0d05) | ![expected](https://github.com/jmaen/snapper/assets/47495425/5dfc8011-ab90-47a2-b899-c5ae7c235802) | ![expected](https://github.com/jmaen/snapper/assets/47495425/4b58c22b-8756-49fd-b7af-6bf074bb9342) |
-| --- | --- | --- |
-| Expected image | `DiffMode.PIXEL` | `DiffMode.BOX` |
+<table width="100%">
+  <tr>
+    <th width="33%">Expected image</td>
+    <th width="33%">Diff mode pixel</td>
+    <th width="33%">Diff mode box</td>
+  </tr>
+  <tr>
+    <td width="33%">
+      <img src="https://github.com/jmaen/snapper/assets/47495425/f3e02c00-eec4-47a2-9766-6401e94c0d05"/>  
+    </td>
+    <td width="33%">
+      <img src="https://github.com/jmaen/snapper/assets/47495425/5dfc8011-ab90-47a2-b899-c5ae7c235802"/>  
+    </td>
+    <td width="33%">
+      <img src="https://github.com/jmaen/snapper/assets/47495425/4b58c22b-8756-49fd-b7af-6bf074bb9342"/>  
+    </td>
+  </tr>
+</table>
+
+
 
 ## Configuration
 The above defaults can be changed via the `snapper.properties` file or by accessing the `SnapshotConfig` directly from your tests.
