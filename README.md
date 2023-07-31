@@ -48,14 +48,14 @@ To control which snapshots should be updated, there are three different update m
 - `NONE`: Update no snapshots (i.e. fail if there is no matching snapshot file)
 
 ## Image comparison
-In case of a failed test, Snapper will compare the images and highlight the differences in the diff image.
+In case of a failed test, Snapper will compare the images and highlight the differences in a diff image.
 By default, these diff images are located in the `build/reports/snapper` directory.
 
 There are two different diff modes:
 
 | ![expected](https://github.com/jmaen/snapper/assets/47495425/f3e02c00-eec4-47a2-9766-6401e94c0d05) | ![expected](https://github.com/jmaen/snapper/assets/47495425/5dfc8011-ab90-47a2-b899-c5ae7c235802) | ![expected](https://github.com/jmaen/snapper/assets/47495425/4b58c22b-8756-49fd-b7af-6bf074bb9342) |
 | --- | --- | --- |
-| Expected image | Diff mode pixel | Diff mode box |
+| Expected image | `DiffMode.PIXEL` | `DiffMode.BOX` |
 
 ## Configuration
 The above defaults can be changed via the `snapper.properties` file or by accessing the `SnapshotConfig` directly from your tests.
