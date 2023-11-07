@@ -16,13 +16,13 @@ public void basicTest() {
 All you have to do is to add a field of type `WebDriver` to any class in your test class hierarchy.
 Snapper finds that field and takes a screenshot of the browser window controlled by that driver right after the test method finished.
 
-After that, it will try to find the corresponding snapshot, which by default is located in the `__snapshots__` directory in your test resources, named `{class}_{method}.png`.
+After that, it will try to find the corresponding snapshot, which by default is located in the `__snapshots__` directory next to your test files, named `{class}_{method}.png`.
 Snapper also supports custom snapshot names, simply pass a name of your choice to the `SnapshotTest` annotation.
 
-It can also be helpful to focus only on a single web element or to ignore certain elements, especially when dealing with dynamic data (e.g. times).
-To do so, you need to give the test method a `SnapshotContext` parameter. This parameter can then be used to tell Snapper how to capture the snapshot in detail.
+Sometimes it can be helpful to focus only on a specific web element or to ignore certain elements, especially when dealing with dynamic data (e.g. times).
+To do so, you need to give the test method a `SnapshotContext` parameter. This parameter can then be used to adjust different snapshot options.
 
-A more advanced test that includes the above features might look like the following:
+A more advanced test that includes the above features might look something like this:
 
 ```java
 @SnapshotTest(name="customName")
@@ -36,7 +36,7 @@ public void advancedTest(SnapshotContext context) {
   context.addIgnoredElement(searchIcon);
 }
 ```
-In the above example, Snapper will only take a screenshot of the search bar and ignore the search icon in the left.
+In the above example, Snapper will only take a screenshot of the search bar and ignore the search icon.
 
 ## Baselining
 In order to compare the test screenshots, Snapper must capture snapshots for each test case as a baseline.
