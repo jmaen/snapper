@@ -22,6 +22,8 @@ public class SnapshotContext {
     private boolean isFullPage;
     private List<WebElement> ignoredElements = new ArrayList<>();
     private Color ignoredColor = Color.MAGENTA;
+    private int ignoredPaddingX = 0;
+    private int ignoredPaddingY = 0;
 
     public boolean hasTarget() {
         return target != null;
@@ -55,6 +57,17 @@ public class SnapshotContext {
         ignoredColor = color;
     }
 
+    public void setIgnoredPadding(int padding) {
+        ignoredPaddingX = padding;
+        ignoredPaddingY = padding;
+    }
+
+    public void setIgnoredPadding(int paddingX, int paddingY) {
+        ignoredPaddingX = paddingX;
+        ignoredPaddingY = paddingY;
+    }
+
+
     public BufferedImage takeScreenshot() throws IOException {
         File file = null;
         if(isFullPage) {
@@ -76,8 +89,12 @@ public class SnapshotContext {
             graphics.setColor(ignoredColor);
             for(WebElement element : ignoredElements) {
                 Rectangle rect = element.getRect();
-                // TODO add padding to prevent overflowing
-                graphics.fillRect(rect.x - targetLocation.x, rect.y - targetLocation.y, rect.width, rect.height);
+                graphics.fillRect(
+                        rect.x - targetLocation.x - ignoredPaddingX,
+                        rect.y - targetLocation.y - ignoredPaddingY,
+                        rect.width + 2*ignoredPaddingX,
+                        rect.height + 2*ignoredPaddingY
+                );
             }
             graphics.dispose();
         }
